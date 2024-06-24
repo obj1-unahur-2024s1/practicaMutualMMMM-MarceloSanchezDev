@@ -1,0 +1,77 @@
+import viajes.*
+import socios.*
+
+describe "test excursiones a ciudades" {
+
+	const ciudadNormal = new ExcurcionCiudad(cantAtracciones = 4, idiomas = [ "espaniol, ingles" ])
+	const ciudadTropical = new ExcurcionCiudadTropical(cantAtracciones = 4, idiomas = [ "espaniol, ingles" ])
+
+	test"una excursión a ciudad normal (no tropical) 
+	en la que se visitan 4 atracciones, lleva 2 días, 
+	no implica esfuerzo, y no sirve para broncearse." {
+		assert.equals(2, ciudadNormal.cuantosDiasDeActividad())
+		assert.notThat(ciudadNormal.implicaEsfuerzo())
+		assert.notThat(ciudadNormal.sirveParaBroncearse())
+	}
+
+	test "una excursión a ciudad tropical 
+	en la que se visitan 4 atracciones, lleva 3 días,
+	 no implica esfuerzo, y sí sirve para broncearse." {
+		assert.equals(3, ciudadTropical.cuantosDiasDeActividad())
+		assert.notThat(ciudadTropical.implicaEsfuerzo())
+		assert.that(ciudadTropical.sirveParaBroncearse())
+	}
+
+}
+
+describe "test Trakking" {
+
+	const trekking1 = new Trekking(cantKm = 100, cantDiasSol = 130, idiomas = [ "espaniol, ingles" ])
+	const trekking2 = new Trekking(cantKm = 50, cantDiasSol = 2400, idiomas = [ "espaniol, ingles" ])
+
+	test"una salida de 100 kilómetros a un lugar 
+	con 130 días de sol por año: lleva 2 días, implica esfuerzo, y no sirve para broncearse." {
+		assert.equals(2, trekking1.cuantosDiasDeActividad())
+		assert.that(trekking1.implicaEsfuerzo())
+		assert.notThat(trekking1.sirveParaBroncearse())
+	}
+
+	test"una salida de 50 kilómetros a un lugar 
+	con 240 días de sol por año: lleva 1 día, no implica esfuerzo, y sí sirve para broncearse." {
+		assert.equals(1, trekking2.cuantosDiasDeActividad())
+		assert.notThat(trekking2.implicaEsfuerzo())
+		assert.that(trekking2.sirveParaBroncearse())
+	}
+
+}
+
+describe "test socios" {
+
+	const trekking1 = new Trekking(cantKm = 100, cantDiasSol = 130, idiomas = [ "espaniol, ingles" ])
+	const playa1 = new ViajesPlaya(largoPlaya = 1000, idiomas = [ "espaniol, ingles" ])
+	const playa2 = new ViajesPlaya(largoPlaya = 2000, idiomas = [ "espaniol, ingles" ])
+	const roque = new Socio(actividadesMax = 2)
+
+	method initialize() {
+		roque.agregasActividad(playa1)
+		roque.agregasActividad(playa2)
+	}
+
+	test" tomemos a Roque, un socio que hizo 2 viajes a la playa,
+	 con longitudes de 1000 y 2000 metros respectivamente,
+	 y que tiene un máximo de 2 actividades" {
+		assert.equals(2, roque.actividadesRealizadas().size())
+	}
+
+	test"roque.esAdoradorDelSol() devuelve true."{
+		assert.that(roque.adoradorDelSol())
+	}
+	test"roque.actividadesEsforzadas() devuelve una colección que tiene solamente el viaje de 2000 metros de playa."{
+		assert.equals([playa2],roque.actEsforzadas())
+	}
+	test"si registramos que Roque realiza una clase de gimnasia, se debe generar un error."{
+		assert.throwsException({roque.agregasActividad(trekking1)})
+	}
+
+}
+
